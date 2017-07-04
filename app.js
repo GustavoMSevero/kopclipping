@@ -1,5 +1,7 @@
+
 var TwitterPackage = require('twitter');
 var mongoose = require('mongoose');
+var stringSearcher = require('string-search');
 
 var secret = {
   consumer_key: 'iWExWHtpT49bV5ije1XwnJ6f8',
@@ -8,25 +10,35 @@ var secret = {
   access_token_secret: '1Az2u0DmNh6ro3n9hXqbjxmwexOVl9ePbjutYrpNN5UT9'
 }
 
-mongoose.connect('mongodb://localhost/my_database');
+//mongoose.connect('mongodb://localhost/my_database');
+mongoose.connect('mongodb://user6:123456@ds139942.mlab.com:39942/kopteste');
 
 var Twitter = new TwitterPackage(secret);
 
-var ClipingPosts = mongoose.model('ClipingPosts', { name: String });
+var ClipingPosts = mongoose.model('Post', { tweet: String, usuario: String });
 
-Twitter.stream('statuses/filter', {track: '@realDonaldTrump'}, function(stream) {
+Twitter.stream('statuses/filter', 
+  {
+    track: '@Vivoemrede'
+  }, function(stream) {
 
   stream.on('data', function(tweet) {
 
-    console.log(tweet.text);
+  /*stringSearcher.find('@Vivoemrede', 'data').then(function(resultArr) {
+    resultArr => [ {line: 1, text: '@Vivoemrede'} ] 
+  });*/
 
-    var posts = new ClipingPosts({ name: tweet.text });
+    console.log(tweet.text);
+    console.log(tweet.user.name);
+    //stringSearcher();
+
+    var posts = new ClipingPosts({ tweet: tweet.text, usuario: tweet.user.name });
 
     posts.save(function (err) {
       if (err) {
         console.log(err);
       } else {
-        console.log('meow');
+        console.log('Tweetaram');
       }
     });
   });
